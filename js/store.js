@@ -1,0 +1,4 @@
+const DB='MSA_HRIS_OFFLINE';function db(){return new Promise((ok,no)=>{let r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('queue',{keyPath:'client_id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function queueAdd(action,payload){let d=await db();return new Promise((ok,no)=>{let t=d.transaction('queue','readwrite');t.objectStore('queue').put({client_id:'C_'+crypto.randomUUID(),action,payload});t.oncomplete=ok;t.onerror=()=>no(t.error)})}
+async function queueAll(){let d=await db();return new Promise((ok,no)=>{let r=d.transaction('queue').objectStore('queue').getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function queueDelete(id){let d=await db();return new Promise((ok,no)=>{let t=d.transaction('queue','readwrite');t.objectStore('queue').delete(id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
